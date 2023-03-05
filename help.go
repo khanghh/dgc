@@ -207,7 +207,42 @@ func renderDefaultSpecificHelpEmbed(ctx *Ctx, command *Command) *discordgo.Messa
 	if len(command.Aliases) > 0 {
 		aliases = "`" + strings.Join(command.Aliases, "`, `") + "`"
 	}
-
+	helpFields := []*discordgo.MessageEmbedField{
+		{
+			Name:   "Name",
+			Value:  "`" + command.Name + "`",
+			Inline: false,
+		},
+		{
+			Name:   "Aliases",
+			Value:  aliases,
+			Inline: false,
+		},
+	}
+	if len(subCommands) > 0 {
+		helpFields = append(helpFields, &discordgo.MessageEmbedField{
+			Name:   "Sub Commands",
+			Value:  subCommands,
+			Inline: false,
+		})
+	}
+	helpFields = append(helpFields, &discordgo.MessageEmbedField{
+		Name:   "Description",
+		Value:  "```" + command.Description + "```",
+		Inline: false,
+	})
+	helpFields = append(helpFields, &discordgo.MessageEmbedField{
+		Name:   "Usage",
+		Value:  "```" + prefix + command.Usage + "```",
+		Inline: false,
+	})
+	if len(command.Example) > 0 {
+		helpFields = append(helpFields, &discordgo.MessageEmbedField{
+			Name:   "Example",
+			Value:  "```" + prefix + command.Example + "```",
+			Inline: false,
+		})
+	}
 	// Return the embed
 	return &discordgo.MessageEmbed{
 		Type:        "rich",
@@ -215,37 +250,6 @@ func renderDefaultSpecificHelpEmbed(ctx *Ctx, command *Command) *discordgo.Messa
 		Description: "Displaying the information for the `" + command.Name + "` command.",
 		Timestamp:   time.Now().Format(time.RFC3339),
 		Color:       0xffff00,
-		Fields: []*discordgo.MessageEmbedField{
-			{
-				Name:   "Name",
-				Value:  "`" + command.Name + "`",
-				Inline: false,
-			},
-			{
-				Name:   "Sub Commands",
-				Value:  subCommands,
-				Inline: false,
-			},
-			{
-				Name:   "Aliases",
-				Value:  aliases,
-				Inline: false,
-			},
-			{
-				Name:   "Description",
-				Value:  "```" + command.Description + "```",
-				Inline: false,
-			},
-			{
-				Name:   "Usage",
-				Value:  "```" + prefix + command.Usage + "```",
-				Inline: false,
-			},
-			{
-				Name:   "Example",
-				Value:  "```" + prefix + command.Example + "```",
-				Inline: false,
-			},
-		},
+		Fields:      helpFields,
 	}
 }

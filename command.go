@@ -69,12 +69,13 @@ func (command *Command) trigger(ctx *Ctx) {
 		}
 	}
 
-	// Prepare all middlewares
-	nextHandler := command.Handler
-	for _, middleware := range ctx.Router.Middlewares {
-		nextHandler = middleware(nextHandler)
+	if command.Handler != nil {
+		// Prepare all middlewares
+		nextHandler := command.Handler
+		for _, middleware := range ctx.Router.Middlewares {
+			nextHandler = middleware(nextHandler)
+		}
+		// Run all middlewares
+		nextHandler(ctx)
 	}
-
-	// Run all middlewares
-	nextHandler(ctx)
 }
